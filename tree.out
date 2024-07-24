@@ -1,0 +1,27 @@
+.
+├── README.md
+├── app
+│   ├── favicon.ico
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
+├── components.json
+├── lib
+│   └── utils.ts
+├── next-env.d.ts
+├── next.config.mjs
+├── package-lock.json
+├── package.json
+├── pages
+│   └── api
+│       └── fetchData
+│           └── route.ts
+├── postcss.config.mjs
+├── public
+│   ├── next.svg
+│   └── vercel.svg
+├── tailwind.config.ts
+├── tree.out
+└── tsconfig.json
+
+7 directories, 18 files

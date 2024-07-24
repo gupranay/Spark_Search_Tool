@@ -1,113 +1,209 @@
-import Image from "next/image";
+"use client";
+import { useState } from "react";
+import Head from "next/head";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+  SelectItem,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 
-export default function Home() {
+const categories = {
+  Branding: "00O38000004ghWpEAI",
+  Designers: "00O38000004gR4TEAU",
+  Website: "00O38000004ghMuEAI",
+  "UI/UX": "00O38000004eUfBEAU",
+  Marketing: "00O38000004ghMBEAY",
+  Accountants: "00O38000004gR4OEAU",
+  "AR/VR": "00O0z000005I1NQEA0",
+  PR: "00O0z000005IMFNEA4",
+  Legal: "00O38000004gR4EEAU",
+  Software: "00O38000004stl2EAA",
+  HR: "00O0z000005TmfdEAC",
+  "PR/Communications Consultants": "00O4z0000064iFkEAI",
+  EIR: "00O38000004spAvEAI",
+  Insurance: "00O4z0000064w8nEAA",
+  Photography: "00O4z0000069k6CEAQ",
+  IP: "00O38000004gR4JEAU",
+  "BootCamp Mentors": "00O4z000005mO0oEAE",
+  Writers: "00O4z000006OiN5EAK",
+};
+
+type RowData = { [key: string]: string };
+
+const Home = () => {
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [data, setData] = useState<RowData[]>([]);
+  const [searchValue, setSearchValue] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleFetchData = async () => {
+    if (!selectedCategory) return;
+    const categoryId = categories[selectedCategory as keyof typeof categories];
+
+    try {
+      setIsLoading(true);
+      const response = await fetch(`/api/fetchData?category_id=${categoryId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const jsonData = await response.json();
+      const extractedData = extractRows(jsonData);
+      setData(extractedData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const extractRows = (data: any): RowData[] => {
+    const columnsInfo = data.reportExtendedMetadata.detailColumnInfo;
+    const columnHeaders = [
+      "*",
+      ...Object.values(columnsInfo).map((info: any) => info.label),
+    ];
+    const factMap = data.factMap;
+    const extractedData: RowData[] = [];
+
+    for (const key in factMap) {
+      if (key === "3!T" || key === "4!T") continue;
+
+      const rows = factMap[key].rows;
+      for (const row of rows) {
+        const rowData: RowData = {};
+        rowData["*"] = key === "2!T" ? "*" : "";
+
+        row.dataCells.forEach((cell: any, i: number) => {
+          const columnName = columnHeaders[i + 1]; // Skip the first column (*)
+          let cellValue = cell.label || "";
+          if (cellValue.includes("<a href=")) {
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = cellValue;
+            const link = tempDiv.querySelector("a");
+            cellValue = link ? link.textContent || "" : "";
+          }
+          rowData[columnName] = cellValue;
+        });
+        extractedData.push(rowData);
+      }
+    }
+
+    return extractedData;
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+    <div className="container mx-auto p-4">
+      <Head>
+        <title>Spark Consultant Data</title>
+        <link rel="icon" href="/public/spark_logo.png" />
+        <meta property="og:title" content="Spark Consultant Data" />
+        <meta
+          property="og:description"
+          content="Pull Consultant Data from Salesforce"
         />
-      </div>
+        <meta property="og:image" content="/spark_logo.png" />
+        <meta property="og:url" content="http://localhost:3000/" />
+      </Head>
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+      <header className="flex justify-start items-center mb-6">
+        <img
+          src="https://annarborusa.org/wp-content/uploads/2022/08/spark-logo.svg"
+          alt="Spark Logo"
+          className="w-32 h-auto"
+        />
+      </header>
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+      <main>
+        <h1 className="text-2xl font-bold mb-4">
+          Pull Consultant Data from Salesforce
+        </h1>
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
+        <Select onValueChange={setSelectedCategory} value={selectedCategory}>
+          <SelectTrigger className="w-[250px]">
+            <SelectValue placeholder="Select a category of consultants" />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.keys(categories).map((key) => (
+              <SelectItem key={key} value={key}>
+                {key}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
+        <Button
+          type="button"
+          onClick={handleFetchData}
+          disabled={isLoading}
+          className="mt-4"
         >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+          {isLoading ? "Pulling Data..." : "Pull Data"}
+        </Button>
+
+        <Input
+          type="text"
+          placeholder="Enter search value"
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          className="mt-4"
+        />
+        <p className="mt-4 text-sm text-gray-600">
+          <strong>Note:</strong> Rows marked with * indicate that the vendor is
+          not an established vendor with Spark and Spark holds no
+          responsibility.
+        </p>
+        {isLoading ? (
+          <div className="flex justify-center mt-4">
+            <LoadingSpinner size={48} />
+          </div>
+        ) : (
+          data.length > 0 && (
+            <div className="mt-4">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    {Object.keys(data[0]).map((header) => (
+                      <TableHead key={header}>{header}</TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {data
+                    .filter((row) =>
+                      Object.values(row).some((value) =>
+                        String(value)
+                          .toLowerCase()
+                          .includes(searchValue.toLowerCase())
+                      )
+                    )
+                    .map((row, index) => (
+                      <TableRow key={index}>
+                        {Object.values(row).map((value, i) => (
+                          <TableCell key={i}>{value}</TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </div>
+          )
+        )}
+      </main>
+    </div>
   );
-}
+};
+
+export default Home;
