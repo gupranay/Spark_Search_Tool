@@ -89,3 +89,21 @@
   align-items: center;
   padding: 0 20px; /* Adjust padding as needed */
 }
+.collapsed-row .table-cell {
+  max-height: 48px; /* Adjust the height as needed */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.expanded-row .table-cell {
+  max-height: none;
+  white-space: normal;
+  cursor: pointer;
+}
+
+.table-cell {
+  padding: 8px 16px;
+  transition: max-height 0.3s ease;
+}

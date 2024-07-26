@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Head from "next/head";
 import {
   Table,
@@ -19,6 +19,16 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const categories = {
   Branding: "00O38000004ghWpEAI",
@@ -48,6 +58,8 @@ const Home = () => {
   const [data, setData] = useState<RowData[]>([]);
   const [searchValue, setSearchValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [expandedRows, setExpandedRows] = useState<number[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(true);
 
   const handleFetchData = async () => {
     if (!selectedCategory) return;
@@ -104,6 +116,55 @@ const Home = () => {
     return extractedData;
   };
 
+  const toggleRow = (index: number) => {
+    setExpandedRows((prev) =>
+      prev.includes(index)
+        ? prev.filter((i) => i !== index)
+        : [...prev, index]
+    );
+  };
+
+  const renderCellContent = (content: string, isExpanded: boolean) => {
+    if (content.length <= 90) return content;
+    if (isExpanded) return content;
+    return `${content.slice(0, 90)}...`;
+  };
+
+  const filteredData = data.filter(row =>
+    ["Functional Expertise", "Industry Expertise", "Description"]
+      .some(field => row[field]?.toLowerCase().includes(searchValue.toLowerCase()))
+  );
+
+  const downloadCSV = () => {
+    if (data.length === 0) return;
+
+    const headers = Object.keys(data[0]);
+    const csvRows = data.map(row =>
+      headers.map(header => JSON.stringify(row[header] || '')).join(',')
+    );
+
+    const csvData = [headers.join(','), ...csvRows].join('\n');
+
+    const blob = new Blob([csvData], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', `${selectedCategory}_consultant_data.csv`);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  const handleContinue = () => {
+    setIsDialogOpen(false);
+  };
+
+  const handleCancel = () => {
+    window.location.href = "https://annarborusa.org/";
+  };
+
   return (
     <div className="container mx-auto p-4">
       <Head>
@@ -118,90 +179,134 @@ const Home = () => {
         <meta property="og:url" content="http://localhost:3000/" />
       </Head>
 
-      <header className="flex justify-start items-center mb-6">
-        <img
-          src="https://annarborusa.org/wp-content/uploads/2022/08/spark-logo.svg"
-          alt="Spark Logo"
-          className="w-32 h-auto"
-        />
-      </header>
+      <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Important Notice</AlertDialogTitle>
+            <AlertDialogDescription>
+              Spark has no liability for the use of this data. Please use it
+              responsibly.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel asChild>
+              <Button variant="outline" onClick={handleCancel}>
+                Cancel
+              </Button>
+            </AlertDialogCancel>
+            <AlertDialogAction asChild>
+              <Button variant="default" onClick={handleContinue}>
+                Continue
+              </Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
-      <main>
-        <h1 className="text-2xl font-bold mb-4">
-          Pull Consultant Data from Salesforce
-        </h1>
+      {!isDialogOpen && (
+        <>
+          <header className="flex justify-start items-center mb-6">
+            <img
+              src="https://annarborusa.org/wp-content/uploads/2022/08/spark-logo.svg"
+              alt="Spark Logo"
+              className="w-32 h-auto"
+            />
+          </header>
 
-        <Select onValueChange={setSelectedCategory} value={selectedCategory}>
-          <SelectTrigger className="w-[250px]">
-            <SelectValue placeholder="Select a category of consultants" />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.keys(categories).map((key) => (
-              <SelectItem key={key} value={key}>
-                {key}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <main>
+            <h1 className="text-2xl font-bold mb-4">
+              Pull Consultant Data from Salesforce
+            </h1>
 
-        <Button
-          type="button"
-          onClick={handleFetchData}
-          disabled={isLoading}
-          className="mt-4"
-        >
-          {isLoading ? "Pulling Data..." : "Pull Data"}
-        </Button>
+            <Select onValueChange={setSelectedCategory} value={selectedCategory}>
+              <SelectTrigger className="w-[250px]">
+                <SelectValue placeholder="Select a category of consultants" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.keys(categories).map((key) => (
+                  <SelectItem key={key} value={key}>
+                    {key}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-        <Input
-          type="text"
-          placeholder="Enter search value"
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          className="mt-4"
-        />
-        <p className="mt-4 text-sm text-gray-600">
-          <strong>Note:</strong> Rows marked with * indicate that the vendor is
-          not an established vendor with Spark and Spark holds no
-          responsibility.
-        </p>
-        {isLoading ? (
-          <div className="flex justify-center mt-4">
-            <LoadingSpinner size={48} />
-          </div>
-        ) : (
-          data.length > 0 && (
-            <div className="mt-4">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    {Object.keys(data[0]).map((header) => (
-                      <TableHead key={header}>{header}</TableHead>
-                    ))}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data
-                    .filter((row) =>
-                      Object.values(row).some((value) =>
-                        String(value)
-                          .toLowerCase()
-                          .includes(searchValue.toLowerCase())
-                      )
-                    )
-                    .map((row, index) => (
-                      <TableRow key={index}>
-                        {Object.values(row).map((value, i) => (
-                          <TableCell key={i}>{value}</TableCell>
+            <div className="flex justify-between items-center mt-4">
+              <Button
+                type="button"
+                onClick={handleFetchData}
+                disabled={isLoading}
+              >
+                {isLoading ? "Pulling Data..." : "Pull Data"}
+              </Button>
+
+              <div className="ml-4">
+                <Button
+                  type="button"
+                  onClick={downloadCSV}
+                  disabled={isLoading || data.length === 0}
+                >
+                  Download CSV
+                </Button>
+              </div>
+            </div>
+
+            <Input
+              type="text"
+              placeholder="Enter search value"
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+              className="mt-4"
+            />
+            <p className="mt-4 text-sm text-gray-600">
+              <strong>Note:</strong> Rows marked with * indicate that the vendor is
+              not an established vendor with Spark and Spark holds no
+              responsibility.
+            </p>
+            {isLoading ? (
+              <div className="flex justify-center mt-4">
+                <LoadingSpinner size={48} />
+              </div>
+            ) : (
+              filteredData.length > 0 && (
+                <div className="mt-4">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        {Object.keys(filteredData[0]).map((header) => (
+                          <TableHead key={header}>{header}</TableHead>
                         ))}
                       </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </div>
-          )
-        )}
-      </main>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredData.map((row, index) => (
+                        <TableRow
+                          key={index}
+                          onClick={() => toggleRow(index)}
+                          className={`cursor-pointer ${
+                            expandedRows.includes(index)
+                              ? "expanded-row"
+                              : "collapsed-row"
+                          }`}
+                        >
+                          {Object.values(row).map((value, i) => (
+                            <TableCell key={i} className="table-cell">
+                              {renderCellContent(
+                                value,
+                                expandedRows.includes(index)
+                              )}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )
+            )}
+          </main>
+        </>
+      )}
     </div>
   );
 };
