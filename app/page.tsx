@@ -185,9 +185,9 @@ const Home = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Important Notice</AlertDialogTitle>
             <AlertDialogDescription>
-              Thank you for using Ann Arbor SPARK's resource database tool.
+              Thank you for using Ann Arbor SPARK&apos;s resource database tool.
               This tool is intended to connect SPARK clients with resources in the community.
-              By clicking "Continue", you acknowledge that SPARK holds no liability for any outcomes.
+              By clicking &quot;Continue&quot;, you acknowledge that SPARK holds no liability for any outcomes.
               Funding may be available for an engagement with vendors or consultants. For more information
               on how to access potential funding, please be in touch with your account lead or email.
               Do not share information found through this tool outside your organization.
@@ -264,7 +264,7 @@ const Home = () => {
               className="mt-4"
             />
             <p className="mt-4 text-sm text-gray-600">
-              <strong>Note:</strong> Records that are marked with “*” indicate a consultant that is new to SPARK’s resource database.
+              <strong>Note:</strong> Records that are marked with &ldquo;*&rdquo; indicate a consultant that is new to SPARK&rsquo;s resource database.
             </p>
             {isLoading ? (
               <div className="flex justify-center mt-4">
