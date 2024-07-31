@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Head from "next/head";
 import {
   Table,
@@ -131,8 +131,9 @@ const Home = () => {
   };
 
   const filteredData = data.filter(row =>
-    ["Functional Expertise", "Industry Expertise", "Description"]
-      .some(field => row[field]?.toLowerCase().includes(searchValue.toLowerCase()))
+    Object.values(row).some(value =>
+      value?.toLowerCase().includes(searchValue.toLowerCase())
+    )
   );
 
   const downloadCSV = () => {
@@ -184,8 +185,12 @@ const Home = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Important Notice</AlertDialogTitle>
             <AlertDialogDescription>
-              Spark has no liability for the use of this data. Please use it
-              responsibly.
+              Thank you for using Ann Arbor SPARK's resource database tool.
+              This tool is intended to connect SPARK clients with resources in the community.
+              By clicking "Continue", you acknowledge that SPARK holds no liability for any outcomes.
+              Funding may be available for an engagement with vendors or consultants. For more information
+              on how to access potential funding, please be in touch with your account lead or email.
+              Do not share information found through this tool outside your organization.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -259,9 +264,7 @@ const Home = () => {
               className="mt-4"
             />
             <p className="mt-4 text-sm text-gray-600">
-              <strong>Note:</strong> Rows marked with * indicate that the vendor is
-              not an established vendor with Spark and Spark holds no
-              responsibility.
+              <strong>Note:</strong> Records that are marked with “*” indicate a consultant that is new to SPARK’s resource database.
             </p>
             {isLoading ? (
               <div className="flex justify-center mt-4">
