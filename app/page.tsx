@@ -178,6 +178,7 @@ const Home = () => {
         />
         <meta property="og:image" content="/spark_logo.png" />
         <meta property="og:url" content="http://localhost:3000/" />
+        <meta name="robots" content="noindex" />
       </Head>
 
       <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
