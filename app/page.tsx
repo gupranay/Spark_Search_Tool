@@ -42,7 +42,7 @@ const categories = {
   Legal: "00O38000004gR4EEAU",
   Software: "00O38000004stl2EAA",
   "Human Resources (HR)": "00O0z000005TmfdEAC",
-  "Public Relations/Communications Consultants": "00O4z0000064iFkEAI",
+  "Communications Consultants": "00O4z0000064iFkEAI",
   "Entrepreneur in Residence (EIR)": "00O38000004spAvEAI",
   Insurance: "00O4z0000064w8nEAA",
   Photography: "00O4z0000069k6CEAQ",
