@@ -34,22 +34,22 @@ const categories = {
   Branding: "00O38000004ghWpEAI",
   Designers: "00O38000004gR4TEAU",
   Website: "00O38000004ghMuEAI",
-  "UI/UX": "00O38000004eUfBEAU",
+  "User Interface/User Experience (UI/UX)": "00O38000004eUfBEAU",
   Marketing: "00O38000004ghMBEAY",
   Accountants: "00O38000004gR4OEAU",
-  "AR/VR": "00O0z000005I1NQEA0",
-  PR: "00O0z000005IMFNEA4",
+  "Augmented Reality/Virtual Reality (AR/VR)": "00O0z000005I1NQEA0",
+  "Public Relations (PR)": "00O0z000005IMFNEA4",
   Legal: "00O38000004gR4EEAU",
   Software: "00O38000004stl2EAA",
-  HR: "00O0z000005TmfdEAC",
-  "PR/Communications Consultants": "00O4z0000064iFkEAI",
-  EIR: "00O38000004spAvEAI",
+  "Human Resources (HR)": "00O0z000005TmfdEAC",
+  "Public Relations/Communications Consultants": "00O4z0000064iFkEAI",
+  "Entrepreneur in Residence (EIR)": "00O38000004spAvEAI",
   Insurance: "00O4z0000064w8nEAA",
   Photography: "00O4z0000069k6CEAQ",
-  IP: "00O38000004gR4JEAU",
-  "BootCamp Mentors": "00O4z000005mO0oEAE",
+  "Intellectual Property (IP)": "00O38000004gR4JEAU",
   Writers: "00O4z000006OiN5EAK",
 };
+
 
 type RowData = { [key: string]: string };
 
