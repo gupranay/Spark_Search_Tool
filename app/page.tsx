@@ -99,7 +99,7 @@ const Home = () => {
         rowData["*"] = key === "2!T" ? "*" : "";
 
         row.dataCells.forEach((cell: any, i: number) => {
-          const columnName = columnHeaders[i + 1]; // Skip the first column (*)
+          const columnName = columnHeaders[i + 1];
           let cellValue = cell.label || "";
           if (cellValue.includes("<a href=")) {
             const tempDiv = document.createElement("div");
@@ -128,11 +128,17 @@ const Home = () => {
     return `${content.slice(0, 90)}...`;
   };
 
-  const filteredData = data.filter((row) =>
-    Object.values(row).some((value) =>
-      value?.toLowerCase().includes(searchValue.toLowerCase())
+  const filteredData = data
+    .filter((row) =>
+      Object.values(row).some((value) =>
+        value?.toLowerCase().includes(searchValue.toLowerCase())
+      )
     )
-  );
+    .sort((a, b) => {
+      const aIsFunder = a['Communication List']?.includes('Funder List') ? 1 : 0;
+      const bIsFunder = b['Communication List']?.includes('Funder List') ? 1 : 0;
+      return bIsFunder - aIsFunder;
+    });
 
   const downloadCSV = () => {
     if (data.length === 0) return;
@@ -182,7 +188,6 @@ const Home = () => {
         <meta name="robots" content="noindex" />
       </Head>
 
-      {/* Move the AlertDialog here */}
       <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <AlertDialogContent style={{ top: '20%' }}>
           <AlertDialogHeader>
@@ -200,7 +205,7 @@ const Home = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel asChild>
-            <Button variant="outline" onClick={handleCancel}>
+              <Button variant="outline" onClick={handleCancel}>
                 Cancel
               </Button>
             </AlertDialogCancel>
@@ -216,17 +221,17 @@ const Home = () => {
       {!isDialogOpen && (
         <>
           <header className="flex justify-start items-center mb-6">
-            {/* <img
+            <img
               src="https://annarborusa.org/wp-content/uploads/2022/08/spark-logo.svg"
               alt="Spark Logo"
               className="w-32 h-auto"
-            /> */}
+            />
           </header>
 
           <main>
-            {/* <h1 className="text-2xl font-bold mb-4">
+            <h1 className="text-2xl font-bold mb-4">
               Pull Consultant Data from Salesforce
-            </h1> */}
+            </h1>
 
             <Select
               onValueChange={setSelectedCategory}
