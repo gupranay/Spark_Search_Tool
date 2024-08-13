@@ -32,24 +32,25 @@ import {
 import InsertServiceProviderDialog from "@/components/InsertProviderDialog";
 
 const categories = {
-  Branding: "00O38000004ghWpEAI",
-  Designers: "00O38000004gR4TEAU",
-  Website: "00O38000004ghMuEAI",
-  "User Interface/User Experience (UI/UX)": "00O38000004eUfBEAU",
-  Marketing: "00O38000004ghMBEAY",
   Accountants: "00O38000004gR4OEAU",
   "Augmented Reality/Virtual Reality (AR/VR)": "00O0z000005I1NQEA0",
-  "Public Relations (PR)": "00O0z000005IMFNEA4",
-  Legal: "00O38000004gR4EEAU",
-  Software: "00O38000004stl2EAA",
-  "Human Resources (HR)": "00O0z000005TmfdEAC",
+  Branding: "00O38000004ghWpEAI",
   "Communications Consultants": "00O4z0000064iFkEAI",
+  Designers: "00O38000004gR4TEAU",
   "Entrepreneur in Residence (EIR)": "00O38000004spAvEAI",
+  "Human Resources (HR)": "00O0z000005TmfdEAC",
   Insurance: "00O4z0000064w8nEAA",
-  Photography: "00O4z0000069k6CEAQ",
   "Intellectual Property (IP)": "00O38000004gR4JEAU",
+  Legal: "00O38000004gR4EEAU",
+  Marketing: "00O38000004ghMBEAY",
+  Photography: "00O4z0000069k6CEAQ",
+  "Public Relations (PR)": "00O0z000005IMFNEA4",
+  Software: "00O38000004stl2EAA",
+  "User Interface/User Experience (UI/UX)": "00O38000004eUfBEAU",
+  Website: "00O38000004ghMuEAI",
   Writers: "00O4z000006OiN5EAK",
 };
+
 
 type RowData = { [key: string]: string };
 

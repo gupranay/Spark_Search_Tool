@@ -11,12 +11,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Select from "react-select";
+import "../app/globals.css";
 
 interface InsertServiceProviderDialogProps {
   onServiceProviderAdded: () => void;
 }
 
-const industryOptions = [
+ export const industryOptions = [
   { value: "Accounting", label: "Accounting" },
   { value: "Advanced Manufacturing", label: "Advanced Manufacturing" },
   { value: "Advanced Materials", label: "Advanced Materials" },
@@ -82,7 +83,7 @@ const industryOptions = [
   { value: "Water Testing", label: "Water Testing" },
 ];
 
-const functionalExpertiseOptions = [
+export const functionalExpertiseOptions = [
   { value: "Accounting", label: "Accounting" },
   { value: "Animation", label: "Animation" },
   { value: "App /Game Marketing", label: "App /Game Marketing" },
@@ -272,7 +273,7 @@ const InsertServiceProviderDialog: React.FC<InsertServiceProviderDialogProps> = 
                 </div>
               )
             ) : (
-              "Fill out the form below to be a new service provider. SARK reviews all submissions before they are added to the database."
+              "Fill out the form below to be a new service provider. SPARK reviews all submissions before they are added to the database."
             )}
           </DialogDescription>
         </DialogHeader>
