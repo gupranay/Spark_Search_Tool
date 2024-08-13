@@ -12,11 +12,10 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "https://spark-search-tool.vercel.app/",
-    site_name: "Spark Consultant Platform",
+    siteName: "Spark Consultant Platform",
     images: [
       {
         url: "https://spark-search-tool.vercel.app/spark_official.png",
-        alt: "Spark Consultant Platform",
       },
     ],
   },
