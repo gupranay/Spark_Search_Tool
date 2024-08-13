@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     siteName: "Spark Consultant Platform",
     images: [
       {
-        url: "https://spark-search-tool.vercel.app/spark_official.png",
+        url: "https://annarborusa.org/wp-content/uploads/2022/08/SPARK-Stacked-Logo-Official-1024x320.png",
       },
     ],
   },
