@@ -51,7 +51,6 @@ const categories = {
   Writers: "00O4z000006OiN5EAK",
 };
 
-
 type RowData = { [key: string]: string };
 
 const Home = () => {
@@ -110,10 +109,6 @@ const Home = () => {
           }
           rowData[columnName] = cellValue;
         });
-        // //hyperlink website column
-        // if (rowData["Website"]) {
-        //   rowData["Website"] = `<a href="${rowData["Website"]}" target="_blank">${rowData["Website"]}</a>`;
-        // }
         extractedData.push(rowData);
       }
     }
@@ -187,8 +182,9 @@ const Home = () => {
         <meta name="robots" content="noindex" />
       </Head>
 
+      {/* Move the AlertDialog here */}
       <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent style={{ top: '20%' }}>
           <AlertDialogHeader>
             <AlertDialogTitle>Important Notice</AlertDialogTitle>
             <AlertDialogDescription>
@@ -277,8 +273,8 @@ const Home = () => {
               className="mt-4"
             />
             <p className="mt-4 text-sm text-gray-600">
-              <strong>Note:</strong> Records that are marked with
-              &ldquo;*&rdquo; indicate a consultant that is new to SPARK&rsquo;s
+              <strong>Note:</strong> Records that are marked with 
+              * indicate a consultant that is new to SPARK&rsquo;s
               resource database.
             </p>
             {isLoading ? (
