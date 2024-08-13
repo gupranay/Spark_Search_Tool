@@ -20,7 +20,6 @@ export const metadata: Metadata = {
       },
     ],
   },
-  }
 };
 
 export default function RootLayout({
@@ -32,20 +31,18 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <Head title={""} />
       <head>
-        <link rel="icon" href="/spark_logo.png"/>
-        
+        <link rel="icon" href="/spark_logo.png" />
       </head>
       <body>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-      >
-        {children}
-      </ThemeProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
-      
     </html>
   );
 }
