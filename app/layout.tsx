@@ -9,6 +9,18 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Spark Consultant Platform",
   description: "Search for consultants and hire them for your projects",
+  openGraph: {
+    type: "website",
+    url: "https://spark-search-tool.vercel.app/",
+    site_name: "Spark Consultant Platform",
+    images: [
+      {
+        url: "https://spark-search-tool.vercel.app/spark_official.png",
+        alt: "Spark Consultant Platform",
+      },
+    ],
+  },
+  }
 };
 
 export default function RootLayout({

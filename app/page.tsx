@@ -29,6 +29,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import InsertServiceProviderDialog from "@/components/InsertProviderDialog";
 
 const categories = {
   Branding: "00O38000004ghWpEAI",
@@ -49,7 +50,6 @@ const categories = {
   "Intellectual Property (IP)": "00O38000004gR4JEAU",
   Writers: "00O4z000006OiN5EAK",
 };
-
 
 type RowData = { [key: string]: string };
 
@@ -109,6 +109,10 @@ const Home = () => {
           }
           rowData[columnName] = cellValue;
         });
+        // //hyperlink website column
+        // if (rowData["Website"]) {
+        //   rowData["Website"] = `<a href="${rowData["Website"]}" target="_blank">${rowData["Website"]}</a>`;
+        // }
         extractedData.push(rowData);
       }
     }
@@ -118,9 +122,7 @@ const Home = () => {
 
   const toggleRow = (index: number) => {
     setExpandedRows((prev) =>
-      prev.includes(index)
-        ? prev.filter((i) => i !== index)
-        : [...prev, index]
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
     );
   };
 
@@ -130,8 +132,8 @@ const Home = () => {
     return `${content.slice(0, 90)}...`;
   };
 
-  const filteredData = data.filter(row =>
-    Object.values(row).some(value =>
+  const filteredData = data.filter((row) =>
+    Object.values(row).some((value) =>
       value?.toLowerCase().includes(searchValue.toLowerCase())
     )
   );
@@ -140,19 +142,19 @@ const Home = () => {
     if (data.length === 0) return;
 
     const headers = Object.keys(data[0]);
-    const csvRows = data.map(row =>
-      headers.map(header => JSON.stringify(row[header] || '')).join(',')
+    const csvRows = data.map((row) =>
+      headers.map((header) => JSON.stringify(row[header] || "")).join(",")
     );
 
-    const csvData = [headers.join(','), ...csvRows].join('\n');
+    const csvData = [headers.join(","), ...csvRows].join("\n");
 
-    const blob = new Blob([csvData], { type: 'text/csv' });
+    const blob = new Blob([csvData], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
 
-    const a = document.createElement('a');
-    a.setAttribute('hidden', '');
-    a.setAttribute('href', url);
-    a.setAttribute('download', `${selectedCategory}_consultant_data.csv`);
+    const a = document.createElement("a");
+    a.setAttribute("hidden", "");
+    a.setAttribute("href", url);
+    a.setAttribute("download", `${selectedCategory}_consultant_data.csv`);
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -163,7 +165,7 @@ const Home = () => {
   };
 
   const handleCancel = () => {
-    window.location.href = "https://annarborusa.org/";
+    window.location.replace("https://annarborusa.org/");
   };
 
   return (
@@ -177,7 +179,10 @@ const Home = () => {
           content="Pull Consultant Data from Salesforce"
         />
         <meta property="og:image" content="/spark_logo.png" />
-        <meta property="og:url" content="http://localhost:3000/" />
+        <meta
+          property="og:url"
+          content="https://spark-search-tool.vercel.app/"
+        />
         <meta name="robots" content="noindex" />
       </Head>
 
@@ -187,16 +192,18 @@ const Home = () => {
             <AlertDialogTitle>Important Notice</AlertDialogTitle>
             <AlertDialogDescription>
               Thank you for using Ann Arbor SPARK&apos;s resource database tool.
-              This tool is intended to connect SPARK clients with resources in the community.
-              By clicking &quot;Continue&quot;, you acknowledge that SPARK holds no liability for any outcomes.
-              Funding may be available for an engagement with vendors or consultants. For more information
-              on how to access potential funding, please be in touch with your account lead or email.
-              Do not share information found through this tool outside your organization.
+              This tool is intended to connect SPARK clients with resources in
+              the community. By clicking &quot;Continue&quot;, you acknowledge
+              that SPARK holds no liability for any outcomes. Funding may be
+              available for an engagement with vendors or consultants. For more
+              information on how to access potential funding, please be in touch
+              with your account lead or email. Do not share information found
+              through this tool outside your organization.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel asChild>
-              <Button variant="outline" onClick={handleCancel}>
+            <Button variant="outline" onClick={handleCancel}>
                 Cancel
               </Button>
             </AlertDialogCancel>
@@ -224,7 +231,10 @@ const Home = () => {
               Pull Consultant Data from Salesforce
             </h1>
 
-            <Select onValueChange={setSelectedCategory} value={selectedCategory}>
+            <Select
+              onValueChange={setSelectedCategory}
+              value={selectedCategory}
+            >
               <SelectTrigger className="w-[250px]">
                 <SelectValue placeholder="Select a category of consultants" />
               </SelectTrigger>
@@ -255,6 +265,7 @@ const Home = () => {
                   Download CSV
                 </Button>
               </div>
+              <InsertServiceProviderDialog onServiceProviderAdded={handleFetchData} />
             </div>
 
             <Input
@@ -265,7 +276,9 @@ const Home = () => {
               className="mt-4"
             />
             <p className="mt-4 text-sm text-gray-600">
-              <strong>Note:</strong> Records that are marked with &ldquo;*&rdquo; indicate a consultant that is new to SPARK&rsquo;s resource database.
+              <strong>Note:</strong> Records that are marked with
+              &ldquo;*&rdquo; indicate a consultant that is new to SPARK&rsquo;s
+              resource database.
             </p>
             {isLoading ? (
               <div className="flex justify-center mt-4">
