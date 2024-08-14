@@ -221,17 +221,17 @@ const Home = () => {
       {!isDialogOpen && (
         <>
           <header className="flex justify-start items-center mb-6">
-            <img
+            {/* <img
               src="https://annarborusa.org/wp-content/uploads/2022/08/spark-logo.svg"
               alt="Spark Logo"
               className="w-32 h-auto"
-            />
+            /> */}
           </header>
 
           <main>
-            <h1 className="text-2xl font-bold mb-4">
+            {/* <h1 className="text-2xl font-bold mb-4">
               Pull Consultant Data from Salesforce
-            </h1>
+            </h1> */}
 
             <Select
               onValueChange={setSelectedCategory}
