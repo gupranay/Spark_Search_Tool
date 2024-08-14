@@ -10,14 +10,14 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import Select from "react-select";
+import Select, { GroupBase } from "react-select";
 import "../app/globals.css";
 
 interface InsertServiceProviderDialogProps {
   onServiceProviderAdded: () => void;
 }
 
- export const industryOptions = [
+export const industryOptions = [
   { value: "Accounting", label: "Accounting" },
   { value: "Advanced Manufacturing", label: "Advanced Manufacturing" },
   { value: "Advanced Materials", label: "Advanced Materials" },
@@ -55,16 +55,28 @@ interface InsertServiceProviderDialogProps {
   { value: "IT-Applications", label: "IT-Applications" },
   { value: "IT-Database Management", label: "IT-Database Management" },
   { value: "IT-Infrastructure", label: "IT-Infrastructure" },
-  { value: "IT-Networking/Computers-Hardware", label: "IT-Networking/Computers-Hardware" },
+  {
+    value: "IT-Networking/Computers-Hardware",
+    label: "IT-Networking/Computers-Hardware",
+  },
   { value: "IT-Social Networking", label: "IT-Social Networking" },
   { value: "Landscape /Lawn Care", label: "Landscape /Lawn Care" },
   { value: "Legal", label: "Legal" },
   { value: "Legal-Corporate", label: "Legal-Corporate" },
   { value: "Legal-IP", label: "Legal-IP" },
-  { value: "Life Science - Bioagriculture", label: "Life Science - Bioagriculture" },
-  { value: "Life Science - Medical Device", label: "Life Science - Medical Device" },
+  {
+    value: "Life Science - Bioagriculture",
+    label: "Life Science - Bioagriculture",
+  },
+  {
+    value: "Life Science - Medical Device",
+    label: "Life Science - Medical Device",
+  },
   { value: "Life Science - Other", label: "Life Science - Other" },
-  { value: "Life Science - Pharma/Biotech", label: "Life Science - Pharma/Biotech" },
+  {
+    value: "Life Science - Pharma/Biotech",
+    label: "Life Science - Pharma/Biotech",
+  },
   { value: "Liquor", label: "Liquor" },
   { value: "Logistics", label: "Logistics" },
   { value: "Manufacturing", label: "Manufacturing" },
@@ -92,7 +104,10 @@ export const functionalExpertiseOptions = [
   { value: "Business Development", label: "Business Development" },
   { value: "Business to Business (B2B)", label: "Business to Business (B2B)" },
   { value: "Collateral Development", label: "Collateral Development" },
-  { value: "Consumer Packaged Goods (CPG)", label: "Consumer Packaged Goods (CPG)" },
+  {
+    value: "Consumer Packaged Goods (CPG)",
+    label: "Consumer Packaged Goods (CPG)",
+  },
   { value: "Content Marketing", label: "Content Marketing" },
   { value: "Crowdfunding", label: "Crowdfunding" },
   { value: "Customer Discovery", label: "Customer Discovery" },
@@ -109,12 +124,18 @@ export const functionalExpertiseOptions = [
   { value: "Event Planning", label: "Event Planning" },
   { value: "Finance", label: "Finance" },
   { value: "Fundraising", label: "Fundraising" },
-  { value: "Government Relations / Regulatory", label: "Government Relations / Regulatory" },
+  {
+    value: "Government Relations / Regulatory",
+    label: "Government Relations / Regulatory",
+  },
   { value: "Graphic Design", label: "Graphic Design" },
   { value: "Human Resources", label: "Human Resources" },
   { value: "Illustration", label: "Illustration" },
   { value: "Intellectual Property", label: "Intellectual Property" },
-  { value: "Large Scale Graphics / Signage", label: "Large Scale Graphics / Signage" },
+  {
+    value: "Large Scale Graphics / Signage",
+    label: "Large Scale Graphics / Signage",
+  },
   { value: "Legal", label: "Legal" },
   { value: "Manufacturing", label: "Manufacturing" },
   { value: "Marketing", label: "Marketing" },
@@ -124,7 +145,10 @@ export const functionalExpertiseOptions = [
   { value: "Operations", label: "Operations" },
   { value: "Photography", label: "Photography" },
   { value: "PR/Communications", label: "PR/Communications" },
-  { value: "Pre-order Sales & Marketing", label: "Pre-order Sales & Marketing" },
+  {
+    value: "Pre-order Sales & Marketing",
+    label: "Pre-order Sales & Marketing",
+  },
   { value: "Product Development", label: "Product Development" },
   { value: "Public Relations", label: "Public Relations" },
   { value: "Sales", label: "Sales" },
@@ -137,11 +161,16 @@ export const functionalExpertiseOptions = [
   { value: "UI/UX", label: "UI/UX" },
   { value: "Video Production", label: "Video Production" },
   { value: "Virtual Reality", label: "Virtual Reality" },
-  { value: "Website Design & Development", label: "Website Design & Development" },
+  {
+    value: "Website Design & Development",
+    label: "Website Design & Development",
+  },
   { value: "Writing", label: "Writing" },
 ];
 
-const InsertServiceProviderDialog: React.FC<InsertServiceProviderDialogProps> = ({ onServiceProviderAdded }) => {
+const InsertServiceProviderDialog: React.FC<
+  InsertServiceProviderDialogProps
+> = ({ onServiceProviderAdded }) => {
   const [formData, setFormData] = useState({
     Company: "",
     "First Name": "",
@@ -166,16 +195,26 @@ const InsertServiceProviderDialog: React.FC<InsertServiceProviderDialogProps> = 
   };
 
   const handleIndustryChange = (selectedOptions: any) => {
-    setFormData((prev) => ({ ...prev, "Industry Experience": selectedOptions }));
+    setFormData((prev) => ({
+      ...prev,
+      "Industry Experience": selectedOptions,
+    }));
   };
 
   const handleFunctionalExpertiseChange = (selectedOptions: any) => {
-    setFormData((prev) => ({ ...prev, "Functional Expertise": selectedOptions }));
+    setFormData((prev) => ({
+      ...prev,
+      "Functional Expertise": selectedOptions,
+    }));
   };
 
   const validateForm = () => {
     for (const key in formData) {
-      if (key !== "Industry Experience" && key !== "Functional Expertise" && formData[key as keyof typeof formData] === "") {
+      if (
+        key !== "Industry Experience" &&
+        key !== "Functional Expertise" &&
+        formData[key as keyof typeof formData] === ""
+      ) {
         return `Please fill out the ${key} field.`;
       }
     }
@@ -193,12 +232,12 @@ const InsertServiceProviderDialog: React.FC<InsertServiceProviderDialogProps> = 
 
     const submissionData = {
       ...formData,
-      "Industry Experience": formData["Industry Experience"].map(
-        (option: any) => option.value
-      ).join("; "), // Convert selected options to semicolon-separated string
-      "Functional Expertise": formData["Functional Expertise"].map(
-        (option: any) => option.value
-      ).join("; "), // Convert selected options to semicolon-separated string
+      "Industry Experience": formData["Industry Experience"]
+        .map((option: any) => option.value)
+        .join("; "), // Convert selected options to semicolon-separated string
+      "Functional Expertise": formData["Functional Expertise"]
+        .map((option: any) => option.value)
+        .join("; "), // Convert selected options to semicolon-separated string
     };
 
     try {
@@ -269,7 +308,8 @@ const InsertServiceProviderDialog: React.FC<InsertServiceProviderDialogProps> = 
                     marginTop: "1rem",
                   }}
                 >
-                  Thank you for your submission! Our team will review it shortly.
+                  Thank you for your submission! Our team will review it
+                  shortly.
                 </div>
               )
             ) : (
@@ -314,21 +354,25 @@ const InsertServiceProviderDialog: React.FC<InsertServiceProviderDialogProps> = 
             <Select
               isMulti
               name="Functional Expertise"
-              options={functionalExpertiseOptions}
+              options={functionalExpertiseOptions as unknown as readonly GroupBase<never>[]}
               className="basic-multi-select"
               classNamePrefix="select"
               onChange={handleFunctionalExpertiseChange}
-              placeholder="Select Functional Expertise"
+              placeholder="Functional Expertise"
+              value={formData["Functional Expertise"]}
             />
+
             <Select
               isMulti
               name="Industry Experience"
-              options={industryOptions}
+              options={industryOptions as unknown as readonly GroupBase<never>[]}
               className="basic-multi-select"
               classNamePrefix="select"
               onChange={handleIndustryChange}
-              placeholder="Select Industry Experience"
+              placeholder="Industry Experience"
+              value={formData["Industry Experience"]}
             />
+
             <Input
               type="text"
               name="Description"

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import Head from "@/components/Head";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,7 +27,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <Head title={""} />
       <head>
         <link rel="icon" href="/spark_logo.png" />
       </head>
