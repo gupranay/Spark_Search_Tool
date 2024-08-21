@@ -129,16 +129,33 @@ const Home = () => {
   };
 
   const filteredData = data
-    .filter((row) =>
-      Object.values(row).some((value) =>
-        value?.toLowerCase().includes(searchValue.toLowerCase())
-      )
+  .filter((row) =>
+    Object.values(row).some((value) =>
+      value?.toLowerCase().includes(searchValue.toLowerCase())
     )
-    .sort((a, b) => {
-      const aIsFunder = a['Communication List']?.includes('Funder List') ? 1 : 0;
-      const bIsFunder = b['Communication List']?.includes('Funder List') ? 1 : 0;
+  )
+  .sort((a, b) => {
+    const aIsFunder = a['Communication List']?.includes('Funder List') ? 1 : 0;
+    const bIsFunder = b['Communication List']?.includes('Funder List') ? 1 : 0;
+    
+    // Sort by Funder List presence first
+    if (aIsFunder !== bIsFunder) {
       return bIsFunder - aIsFunder;
-    });
+    }
+
+    // Then sort by group ("0!T", "1!T", "2!T", etc.)
+    if (a['*'] !== b['*']) {
+      return a['*'].localeCompare(b['*']);
+    }
+
+    // Finally, sort alphabetically by Account Name and Contact Last Name
+    const accountNameCompare = a['Account Name']?.localeCompare(b['Account Name']);
+    if (accountNameCompare !== 0) {
+      return accountNameCompare;
+    }
+
+    return a['Contact Last Name']?.localeCompare(b['Contact Last Name']);
+  });
 
   const downloadCSV = () => {
     if (data.length === 0) return;

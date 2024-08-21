@@ -77,6 +77,22 @@
   }
 }
 
+@keyframes smoothColorChange {
+  0% {
+    filter: brightness(100%);
+  }
+  50% {
+    filter: brightness(110%);
+  }
+  100% {
+    filter: brightness(100%);
+  }
+}
+
+.smooth-transition {
+  animation: smoothColorChange 1s ease-in-out;
+}
+
 .animate-spin {
   animation: spin 1s linear infinite;
 }
