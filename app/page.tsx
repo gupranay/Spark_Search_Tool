@@ -129,33 +129,39 @@ const Home = () => {
   };
 
   const filteredData = data
-  .filter((row) =>
-    Object.values(row).some((value) =>
-      value?.toLowerCase().includes(searchValue.toLowerCase())
+    .filter((row) =>
+      Object.values(row).some((value) =>
+        value?.toLowerCase().includes(searchValue.toLowerCase())
+      )
     )
-  )
-  .sort((a, b) => {
-    const aIsFunder = a['Communication List']?.includes('Funder List') ? 1 : 0;
-    const bIsFunder = b['Communication List']?.includes('Funder List') ? 1 : 0;
-    
-    // Sort by Funder List presence first
-    if (aIsFunder !== bIsFunder) {
-      return bIsFunder - aIsFunder;
-    }
+    .sort((a, b) => {
+      const aIsFunder = a["Communication List"]?.includes("Funder List")
+        ? 1
+        : 0;
+      const bIsFunder = b["Communication List"]?.includes("Funder List")
+        ? 1
+        : 0;
 
-    // Then sort by group ("0!T", "1!T", "2!T", etc.)
-    if (a['*'] !== b['*']) {
-      return a['*'].localeCompare(b['*']);
-    }
+      // Sort by Funder List presence first
+      if (aIsFunder !== bIsFunder) {
+        return bIsFunder - aIsFunder;
+      }
 
-    // Finally, sort alphabetically by Account Name and Contact Last Name
-    const accountNameCompare = a['Account Name']?.localeCompare(b['Account Name']);
-    if (accountNameCompare !== 0) {
-      return accountNameCompare;
-    }
+      // Then sort by group ("0!T", "1!T", "2!T", etc.)
+      if (a["*"] !== b["*"]) {
+        return a["*"].localeCompare(b["*"]);
+      }
 
-    return a['Contact Last Name']?.localeCompare(b['Contact Last Name']);
-  });
+      // Finally, sort alphabetically by Account Name and Contact Last Name
+      const accountNameCompare = a["Account Name"]?.localeCompare(
+        b["Account Name"]
+      );
+      if (accountNameCompare !== 0) {
+        return accountNameCompare;
+      }
+
+      return a["Contact Last Name"]?.localeCompare(b["Contact Last Name"]);
+    });
 
   const downloadCSV = () => {
     if (data.length === 0) return;
@@ -206,18 +212,19 @@ const Home = () => {
       </Head>
 
       <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <AlertDialogContent style={{ top: '20%' }}>
+        <AlertDialogContent style={{ top: "20%" }}>
           <AlertDialogHeader>
             <AlertDialogTitle>Important Notice</AlertDialogTitle>
             <AlertDialogDescription>
               Thank you for using Ann Arbor SPARK&apos;s resource database tool.
               This tool is intended to connect SPARK clients with resources in
-              the community. By clicking &quot;Continue&quot;, you acknowledge
-              that SPARK holds no liability for any outcomes. Funding may be
-              available for an engagement with vendors or consultants. For more
-              information on how to access potential funding, please be in touch
-              with your account lead or email. Do not share information found
-              through this tool outside your organization.
+              the community. By clicking &quot;Continue,&quot; you agree to hold
+              harmless Ann Arbor SPARK from any advice which may not prove
+              beneficial in any material way. Grant dollars may be available for
+              an engagement with vendors or consultants. For more information on
+              how to access potential funding, please contact your SPARK account
+              lead. Do not share information found through this tool outside
+              your organization.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -284,7 +291,9 @@ const Home = () => {
                   Download CSV
                 </Button>
               </div>
-              <InsertServiceProviderDialog onServiceProviderAdded={handleFetchData} />
+              <InsertServiceProviderDialog
+                onServiceProviderAdded={handleFetchData}
+              />
             </div>
 
             <Input
@@ -295,9 +304,8 @@ const Home = () => {
               className="mt-4"
             />
             <p className="mt-4 text-sm text-gray-600">
-              <strong>Note:</strong> Records that are marked with 
-              * indicate a consultant that is new to SPARK&rsquo;s
-              resource database.
+              <strong>Note:</strong> Records that are marked with * indicate a
+              consultant that is new to SPARK&rsquo;s resource database.
             </p>
             {isLoading ? (
               <div className="flex justify-center mt-4">
@@ -309,9 +317,11 @@ const Home = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        {Object.keys(filteredData[0]).map((header) => (
-                          <TableHead key={header}>{header}</TableHead>
-                        ))}
+                        {Object.keys(filteredData[0])
+                          .filter((header) => header !== "Communication List") // Skip rendering "Communication List" header
+                          .map((header) => (
+                            <TableHead key={header}>{header}</TableHead>
+                          ))}
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -325,14 +335,16 @@ const Home = () => {
                               : "collapsed-row"
                           }`}
                         >
-                          {Object.values(row).map((value, i) => (
-                            <TableCell key={i} className="table-cell">
-                              {renderCellContent(
-                                value,
-                                expandedRows.includes(index)
-                              )}
-                            </TableCell>
-                          ))}
+                          {Object.entries(row)
+                            .filter(([key]) => key !== "Communication List") // Skip rendering "Communication List" data
+                            .map(([key, value], i) => (
+                              <TableCell key={i} className="table-cell">
+                                {renderCellContent(
+                                  value,
+                                  expandedRows.includes(index)
+                                )}
+                              </TableCell>
+                            ))}
                         </TableRow>
                       ))}
                     </TableBody>
