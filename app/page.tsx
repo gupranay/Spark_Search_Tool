@@ -67,7 +67,13 @@ const Home = () => {
 
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/fetchData?category_id=${categoryId}`);
+      const response = await fetch(`/api/fetchData`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ category_id: categoryId }),
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

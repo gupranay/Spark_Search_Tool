@@ -2,7 +2,12 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const { category_id } = req.query;
+    if (req.method !== 'POST') {
+        res.status(405).json({ error: 'Method Not Allowed' });
+        return;
+    }
+
+    const { category_id } = req.body;
     const secret_url = process.env.MAKE_URL_V2;
 
     if (!category_id) {
@@ -10,10 +15,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return;
     }
 
-    const make_webhook_url = `${secret_url}?category_id=${category_id}`;
+    const make_webhook_url = `${secret_url}`;
     try {
         const response = await fetch(make_webhook_url, {
             method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ category_id }),
         });
 
         if (response.ok) {
