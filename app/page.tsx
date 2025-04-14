@@ -297,9 +297,9 @@ const Home = () => {
                   Download CSV
                 </Button>
               </div>
-              <InsertServiceProviderDialog
+              {/* <InsertServiceProviderDialog
                 onServiceProviderAdded={handleFetchData}
-              />
+              /> */}
             </div>
 
             <Input
