@@ -172,7 +172,9 @@ const Home = () => {
   const downloadCSV = () => {
     if (data.length === 0) return;
 
-    const headers = Object.keys(data[0]);
+    const headers = Object.keys(data[0]).filter(
+      (header) => header !== "Communication List"
+    );
     const csvRows = data.map((row) =>
       headers.map((header) => JSON.stringify(row[header] || "")).join(",")
     );
