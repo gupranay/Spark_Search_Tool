@@ -7,9 +7,12 @@ import { Analytics } from "@vercel/analytics/react"
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Spark Consultant Platform",
-  description: "Search for consultants and hire them for your projects",
+  title: "Spark Consultant Data",
+  description: "Pull Consultant Data from Salesforce",
+  robots: "noindex",
   openGraph: {
+    title: "Spark Consultant Data",
+    description: "Pull Consultant Data from Salesforce",
     type: "website",
     url: "https://spark-search-tool.vercel.app/",
     siteName: "Spark Consultant Platform",

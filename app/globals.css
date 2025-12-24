@@ -110,16 +110,34 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  cursor: pointer;
 }
 
 .expanded-row .table-cell {
   max-height: none;
   white-space: normal;
-  cursor: pointer;
 }
 
 .table-cell {
   padding: 8px 16px;
   transition: max-height 0.3s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.table-cell:hover {
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+.table-cell:active {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Sticky column styles - ensure they stay visible when scrolling */
+.sticky {
+  position: sticky;
+}
+
+/* Ensure sticky columns maintain background when row is hovered */
+tbody tr:hover .sticky.bg-background {
+  background-color: hsl(var(--muted) / 0.5);
 }

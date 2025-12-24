@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import Head from "next/head";
 import {
   Table,
   TableBody,
@@ -203,22 +202,6 @@ const Home = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <Head>
-        <title>Spark Consultant Data</title>
-        <link rel="icon" href="/public/spark_logo.png" />
-        <meta property="og:title" content="Spark Consultant Data" />
-        <meta
-          property="og:description"
-          content="Pull Consultant Data from Salesforce"
-        />
-        <meta property="og:image" content="/spark_logo.png" />
-        <meta
-          property="og:url"
-          content="https://spark-search-tool.vercel.app/"
-        />
-        <meta name="robots" content="noindex" />
-      </Head>
-
       <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <AlertDialogContent style={{ top: "20%" }}>
           <AlertDialogHeader>
