@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -28,7 +28,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import InsertServiceProviderDialog from "@/components/InsertProviderDialog";
+import { ChevronDown, ChevronUp, Copy, Check } from "lucide-react";
 
 const categories = {
   Accountants: "00O38000004gR4OEAU",
@@ -59,6 +70,11 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(true);
+  const [isColumnDialogOpen, setIsColumnDialogOpen] = useState(false);
+  const [selectedColumns, setSelectedColumns] = useState<Set<string>>(
+    new Set()
+  );
+  const [copiedCell, setCopiedCell] = useState<string | null>(null);
 
   const handleFetchData = async () => {
     if (!selectedCategory) return;
@@ -121,16 +137,96 @@ const Home = () => {
     return extractedData;
   };
 
-  const toggleRow = (index: number) => {
+  const toggleRow = (index: number, e?: React.MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+    }
     setExpandedRows((prev) =>
       prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
     );
   };
 
+  const copyToClipboard = async (text: string, cellId: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedCell(cellId);
+      setTimeout(() => setCopiedCell(null), 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  };
+
+  const copyCell = (
+    value: string,
+    rowIndex: number,
+    columnKey: string,
+    e: React.MouseEvent
+  ) => {
+    e.stopPropagation();
+    const cellId = `${rowIndex}-${columnKey}`;
+    copyToClipboard(value, cellId);
+  };
+
+  const highlightSearchTerm = (
+    text: string,
+    searchTerm: string,
+    isExpanded: boolean
+  ): React.ReactNode => {
+    if (!text) return text;
+
+    // Handle truncation first if needed
+    let displayText = text;
+    if (!isExpanded && text.length > 90) {
+      displayText = text.slice(0, 90) + "...";
+    }
+
+    // If no search term, return text as-is
+    if (!searchTerm) {
+      return displayText;
+    }
+
+    const searchLower = searchTerm.toLowerCase();
+    const displayTextLower = displayText.toLowerCase();
+    const parts: React.ReactNode[] = [];
+    let lastIndex = 0;
+    let currentIndex = 0;
+    let keyCounter = 0;
+
+    // Find all matches
+    while (
+      (currentIndex = displayTextLower.indexOf(searchLower, lastIndex)) !== -1
+    ) {
+      // Add text before match
+      if (currentIndex > lastIndex) {
+        parts.push(displayText.slice(lastIndex, currentIndex));
+      }
+      // Add highlighted match
+      parts.push(
+        <mark
+          key={`highlight-${keyCounter++}`}
+          className="bg-yellow-300 text-inherit px-0 py-0"
+        >
+          {displayText.slice(currentIndex, currentIndex + searchTerm.length)}
+        </mark>
+      );
+      lastIndex = currentIndex + searchTerm.length;
+    }
+
+    // Add remaining text
+    if (lastIndex < displayText.length) {
+      parts.push(displayText.slice(lastIndex));
+    }
+
+    // If no matches were found, return the text as-is
+    if (parts.length === 0) {
+      return displayText;
+    }
+
+    return <>{parts}</>;
+  };
+
   const renderCellContent = (content: string, isExpanded: boolean) => {
-    if (content.length <= 90) return content;
-    if (isExpanded) return content;
-    return `${content.slice(0, 90)}...`;
+    return highlightSearchTerm(content, searchValue, isExpanded);
   };
 
   const filteredData = data
@@ -168,12 +264,15 @@ const Home = () => {
       return a["Contact Last Name"]?.localeCompare(b["Contact Last Name"]);
     });
 
-  const downloadCSV = () => {
+  const handleDownloadClick = () => {
     if (data.length === 0) return;
+    setIsColumnDialogOpen(true);
+  };
 
-    const headers = Object.keys(data[0]).filter(
-      (header) => header !== "Communication List"
-    );
+  const downloadCSV = (columnsToInclude: string[]) => {
+    if (data.length === 0 || columnsToInclude.length === 0) return;
+
+    const headers = columnsToInclude;
     const csvRows = data.map((row) =>
       headers.map((header) => JSON.stringify(row[header] || "")).join(",")
     );
@@ -191,6 +290,34 @@ const Home = () => {
     a.click();
     document.body.removeChild(a);
   };
+
+  const handleColumnToggle = (column: string) => {
+    setSelectedColumns((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(column)) {
+        newSet.delete(column);
+      } else {
+        newSet.add(column);
+      }
+      return newSet;
+    });
+  };
+
+  const handleDownloadConfirm = () => {
+    const columnsArray = Array.from(selectedColumns);
+    downloadCSV(columnsArray);
+    setIsColumnDialogOpen(false);
+  };
+
+  // Initialize selected columns when dialog opens
+  useEffect(() => {
+    if (isColumnDialogOpen && data.length > 0) {
+      const allColumns = Object.keys(data[0]).filter(
+        (header) => header !== "Communication List"
+      );
+      setSelectedColumns(new Set(allColumns));
+    }
+  }, [isColumnDialogOpen, data]);
 
   const handleContinue = () => {
     setIsDialogOpen(false);
@@ -232,6 +359,51 @@ const Home = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={isColumnDialogOpen} onOpenChange={setIsColumnDialogOpen}>
+        <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Select Columns to Download</DialogTitle>
+            <DialogDescription>
+              Choose which columns you want to include in your CSV download.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-4">
+            {data.length > 0 &&
+              Object.keys(data[0])
+                .filter((header) => header !== "Communication List")
+                .map((column) => (
+                  <div key={column} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={column}
+                      checked={selectedColumns.has(column)}
+                      onCheckedChange={() => handleColumnToggle(column)}
+                    />
+                    <Label
+                      htmlFor={column}
+                      className="text-sm font-normal cursor-pointer"
+                    >
+                      {column}
+                    </Label>
+                  </div>
+                ))}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsColumnDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDownloadConfirm}
+              disabled={selectedColumns.size === 0}
+            >
+              Download CSV
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {!isDialogOpen && (
         <>
@@ -276,7 +448,7 @@ const Home = () => {
               <div className="ml-4">
                 <Button
                   type="button"
-                  onClick={downloadCSV}
+                  onClick={handleDownloadClick}
                   disabled={isLoading || data.length === 0}
                 >
                   Download CSV
@@ -298,6 +470,9 @@ const Home = () => {
               <strong>Note:</strong> Records that are marked with * indicate a
               consultant that is new to SPARK&rsquo;s resource database.
             </p>
+            <p className="mt-2 text-sm text-gray-600">
+              <strong>Tip:</strong> Click on any cell to copy its value.
+            </p>
             {isLoading ? (
               <div className="flex justify-center mt-4">
                 <LoadingSpinner size={48} />
@@ -308,6 +483,7 @@ const Home = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
+                        <TableHead className="w-12 sticky left-0 z-10 bg-background border-r"></TableHead>
                         {Object.keys(filteredData[0])
                           .filter((header) => header !== "Communication List") // Skip rendering "Communication List" header
                           .map((header) => (
@@ -316,28 +492,67 @@ const Home = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredData.map((row, index) => (
-                        <TableRow
-                          key={index}
-                          onClick={() => toggleRow(index)}
-                          className={`cursor-pointer ${
-                            expandedRows.includes(index)
-                              ? "expanded-row"
-                              : "collapsed-row"
-                          }`}
-                        >
-                          {Object.entries(row)
-                            .filter(([key]) => key !== "Communication List") // Skip rendering "Communication List" data
-                            .map(([key, value], i) => (
-                              <TableCell key={i} className="table-cell">
-                                {renderCellContent(
-                                  value,
-                                  expandedRows.includes(index)
+                      {filteredData.map((row, index) => {
+                        const isExpanded = expandedRows.includes(index);
+                        const cellId = (rowIndex: number, colKey: string) =>
+                          `${rowIndex}-${colKey}`;
+
+                        return (
+                          <TableRow
+                            key={index}
+                            className={`${
+                              isExpanded ? "expanded-row" : "collapsed-row"
+                            }`}
+                          >
+                            <TableCell className="w-12 p-2 sticky left-0 z-10 bg-background border-r">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => toggleRow(index, e)}
+                                className="h-8 w-8 p-0"
+                                title={
+                                  isExpanded ? "Collapse row" : "Expand row"
+                                }
+                              >
+                                {isExpanded ? (
+                                  <ChevronUp className="h-4 w-4" />
+                                ) : (
+                                  <ChevronDown className="h-4 w-4" />
                                 )}
-                              </TableCell>
-                            ))}
-                        </TableRow>
-                      ))}
+                              </Button>
+                            </TableCell>
+                            {Object.entries(row)
+                              .filter(([key]) => key !== "Communication List") // Skip rendering "Communication List" data
+                              .map(([key, value], i) => {
+                                const currentCellId = cellId(index, key);
+                                const isCellCopied =
+                                  copiedCell === currentCellId;
+
+                                return (
+                                  <TableCell
+                                    key={i}
+                                    className="table-cell relative group"
+                                    onClick={(e) =>
+                                      copyCell(value, index, key, e)
+                                    }
+                                    title="Click to copy"
+                                  >
+                                    <div className="flex items-center justify-between gap-2 min-h-[24px]">
+                                      <span className="flex-1">
+                                        {renderCellContent(value, isExpanded)}
+                                      </span>
+                                      {isCellCopied ? (
+                                        <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
+                                      ) : (
+                                        <Copy className="h-3 w-3 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                                      )}
+                                    </div>
+                                  </TableCell>
+                                );
+                              })}
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 </div>
